@@ -142,7 +142,7 @@ h2{font-family:var(--display);font-weight:600;font-size:1.35rem;margin:0 0 4px}
     <div class="meta"><span class="label" id="talkTag">Frase</span><span id="talkBest"></span></div>
     <div class="row" style="align-items:center"><div class="pt" id="talkTarget" style="flex:1"></div><span id="talkPlay"></span></div>
     <div class="say" id="talkSay"></div>
-    <div class="row" id="micRow" hidden><button class="btn primary" id="micBtn" type="button">🎙 Grabar</button></div>
+    <div class="row" id="micRow" hidden><button class="btn primary" style="font-size:1.1rem;padding:16px 20px" id="micBtn" type="button">🎙 Grabar</button></div>
     <label class="label" for="talkBox" id="talkLbl">Tu navegador no permite grabar acá: usá el 🎙 del teclado del celular</label>
     <textarea id="talkBox" rows="2" class="dict" placeholder="Acá aparece lo que dijiste…"></textarea>
     <div class="row">
@@ -152,10 +152,11 @@ h2{font-family:var(--display);font-weight:600;font-size:1.35rem;margin:0 0 4px}
     <div id="talkResult" hidden></div>
   </div>
   <details class="howto">
-    <summary>Cómo activar el dictado en portugués (1 vez)</summary>
-    <p><b>iPhone:</b> Configuración → General → Teclado → Teclados → Agregar → Portugués (Brasil). Después, en el teclado tocás el 🌐 para elegir portugués y tocás el micrófono.</p>
-    <p><b>Android (Gboard):</b> Configuración de Gboard → Idiomas → Agregar → Português (Brasil). En el teclado mantené apretada la barra espaciadora para cambiar a portugués y tocá el micrófono.</p>
-    <p>Importante: el dictado tiene que estar en <b>portugués</b>. Si está en español, te va a escribir «no» en lugar de «não» y no sirve para corregir.</p>
+    <summary>¿No te anda el micrófono?</summary>
+    <p><b>Compu:</b> usá Chrome o Edge. La primera vez el navegador te pregunta si permitís el micrófono: tocá <b>Permitir</b>. Si lo rechazaste, tocá el candado al lado de la dirección → Micrófono → Permitir, y recargá.</p>
+    <p><b>Android:</b> abrila en Chrome y permití el micrófono.</p>
+    <p><b>iPhone:</b> abrila en Safari. Necesitás tener activado el Dictado (Configuración → General → Teclado → Activar Dictado).</p>
+    <p><b>Plan B:</b> agregá el teclado Portugués (Brasil), tocá el 🎙 del teclado, decí la frase en el cuadro y tocá Corregir.</p>
   </details>
 </section>
 
@@ -418,13 +419,13 @@ function localTips(miss,said){const tips=new Set();const ns=norm(said);
 $("#talkCheck").onclick=talkCheck;$("#talkNext").onclick=talkNext;
 /* micrófono directo, solo si el navegador lo permite */
 (function(){let SR=null;try{SR=window.SpeechRecognition||window.webkitSpeechRecognition}catch(e){}if(!SR)return;
- let rec=null,on=false;const btn=$("#micBtn");$("#micRow").hidden=false;$("#talkLbl").textContent="Tocá Grabar, decí la frase y esperá: se corrige solo";
+ let rec=null,on=false;const btn=$("#micBtn");$("#micRow").hidden=false;$("#talkLbl").textContent="Tocá Grabar, decí la frase y se corrige sola. También podés dictar o escribir acá:";
  btn.onclick=()=>{if(on){try{rec.stop()}catch(e){}return}
   try{rec=new SR();rec.lang="pt-BR";rec.interimResults=true;rec.maxAlternatives=1}catch(e){$("#micRow").hidden=true;return}
   rec.onresult=ev=>{let t="";for(const r of ev.results)t+=r[0].transcript;$("#talkBox").value=t};
   rec.onend=()=>{on=false;btn.classList.remove("rec");btn.textContent="🎙 Grabar";if($("#talkBox").value.trim())talkCheck()};
-  rec.onerror=ev=>{if(ev.error==="not-allowed"||ev.error==="service-not-allowed"||ev.error==="audio-capture"){$("#micRow").hidden=true;$("#talkLbl").textContent="Acá el micrófono directo está bloqueado: usá el 🎙 del teclado del celular"}};
-  try{rec.start();on=true;btn.classList.add("rec");btn.textContent="■ Parar";$("#talkBox").value=""}catch(e){$("#micRow").hidden=true}}})();
+  rec.onerror=ev=>{if(ev.error==="not-allowed"||ev.error==="service-not-allowed"){$("#talkLbl").textContent="El micrófono está bloqueado. Permitilo en el navegador (mirá abajo cómo) o usá el 🎙 del teclado:"}else if(ev.error==="no-speech"){$("#talkLbl").textContent="No te escuché. Tocá Grabar y hablá apenas empiece."}else if(ev.error==="network"){$("#talkLbl").textContent="El reconocimiento de voz necesita internet. Revisá la conexión."}};
+  try{rec.start();on=true;btn.classList.add("rec");btn.textContent="■ Escuchando… tocá para parar";$("#talkBox").value=""}catch(e){$("#micRow").hidden=true}}})();
 
 /* ---------- pestañas ---------- */
 const TABS=["cards","talk","chat","false","sound","plan"];
