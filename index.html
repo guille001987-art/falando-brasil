@@ -90,6 +90,8 @@ h2{font-family:var(--display);font-weight:600;font-size:1.35rem;margin:0 0 4px}
 .compose textarea{flex:1;min-width:0;font:1rem var(--body);background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:10px 12px;resize:none;min-height:46px}
 .hint{font-size:.85rem;color:var(--muted);margin:8px 0 0}
 .empty{color:var(--muted);font-size:.95rem;padding:16px;border:1px dashed var(--line);border-radius:12px;text-align:center}
+.mean{font-size:1.05rem;color:var(--ink)}
+.mean b{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-right:6px}
 .dict{font:1.1rem var(--body);background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:10px 12px;resize:vertical;width:100%;min-height:56px}
 .res{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:12px}
 .verdict{display:flex;align-items:center;gap:12px}
@@ -141,6 +143,7 @@ h2{font-family:var(--display);font-weight:600;font-size:1.35rem;margin:0 0 4px}
   <div class="card">
     <div class="meta"><span class="label" id="talkTag">Frase</span><span id="talkBest"></span></div>
     <div class="row" style="align-items:center"><div class="pt" id="talkTarget" style="flex:1"></div><span id="talkPlay"></span></div>
+    <div class="mean" id="talkEs"></div>
     <div class="say" id="talkSay"></div>
     <div class="row" id="micRow" hidden><button class="btn primary" style="font-size:1.1rem;padding:16px 20px" id="micBtn" type="button">🎙 Grabar</button></div>
     <label class="label" for="talkBox" id="talkLbl">Tu navegador no permite grabar acá: usá el 🎙 del teclado del celular</label>
@@ -325,7 +328,7 @@ function drawCard(){const el=$("#card");el.innerHTML="";
  const line=document.createElement("div");line.className="row";line.style.alignItems="center";const p=document.createElement("div");p.className="pt";p.style.flex="1";p.textContent=pt;line.append(p,playBtn(pt));
  const s=document.createElement("div");s.className="say";s.textContent="Suena: "+say;el.append(line,s);
  if(note){const n=document.createElement("div");n.className="note";n.textContent=note;el.append(n)}
- const tr=document.createElement("div");tr.className="row";const tb=document.createElement("button");tb.className="btn ghost";tb.type="button";tb.textContent="🎙 Practicar cómo la digo";tb.onclick=()=>{talkSet({pt:firstVar(pt),say,tag:"Tarjeta"});goTab("talk")};tr.append(tb);el.append(tr);
+ const tr=document.createElement("div");tr.className="row";const tb=document.createElement("button");tb.className="btn ghost";tb.type="button";tb.textContent="🎙 Practicar cómo la digo";tb.onclick=()=>{talkSet({pt:firstVar(pt),es,say,tag:"Tarjeta"});goTab("talk")};tr.append(tb);el.append(tr);
  const r=document.createElement("div");r.className="row";[["bad","No la sabía",0],["mid","Más o menos",1],["good","La sabía",2]].forEach(([c,l,g])=>{const b=document.createElement("button");b.className="btn "+c;b.textContent=l;b.onclick=()=>grade(g);r.append(b)});el.append(r);
  el.classList.add("flip");setTimeout(()=>el.classList.remove("flip"),150)}
 function grade(g){const p=store.get("fb_srs",{});const r=p[cur]||{box:0};r.box=g===0?0:g===1?Math.max(1,r.box):Math.min(4,r.box+1);r.due=dayNum()+(g===0?0:INT[r.box]);p[cur]=r;store.set("fb_srs",p);markPractice();stats();last=cur;next()}
@@ -375,13 +378,14 @@ $("#box").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.prev
 const firstVar=s=>s.split(" / ")[0].replace(/!$/,"!").trim();
 const norm=s=>s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9\s]/g," ").split(/\s+/).filter(Boolean);
 function talkPool(c){
- if(c==="sonidos")return RULES.flatMap(([k,,ex])=>ex.split("·").map(x=>{const [w,s]=x.split("→").map(t=>t.trim());return {pt:w,say:s||"",tag:"Sonido "+k}}));
- return CARDS.filter(x=>c==="todas"||x[0]===c).map(x=>({pt:firstVar(x[2]).replace(/\.\.\.$/,"").trim(),say:x[3],tag:{negocios:"Negocios",viaje:"Viaje",basico:"Básico"}[x[0]]}));
+ if(c==="sonidos")return RULES.flatMap(([k,,ex])=>ex.split("·").map(x=>{const [w,s]=x.split("→").map(t=>t.trim());return {pt:w,es:MEAN[w]||"",say:s||"",tag:"Sonido "+k}}));
+ return CARDS.filter(x=>c==="todas"||x[0]===c).map(x=>({pt:firstVar(x[2]).replace(/\.\.\.$/,"").trim(),es:x[1],say:x[3],tag:{negocios:"Negocios",viaje:"Viaje",basico:"Básico"}[x[0]]}));
 }
+const MEAN={"tia":"tía","dia":"día","cidade":"ciudad","Rio":"río (y Río de Janeiro)","carro":"auto","rua":"calle","não":"no","pão":"pan","São Paulo":"San Pablo","bem":"bien","também":"también","tem":"tiene / hay","obrigado":"gracias","preço":"precio","leite":"leche","de":"de","trabalho":"trabajo","amanhã":"mañana","Brasil":"Brasil","qual":"cuál","Natal":"Navidad (y la ciudad de Natal)"};
 let talkCat="todas",talkCur=null;
 function renderTalkCats(){const el=$("#talkCats");el.innerHTML="";[["todas","Todas"],["negocios","Negocios"],["viaje","Viaje"],["basico","Básico"],["sonidos","Sonidos difíciles"]].forEach(([k,l])=>{const b=document.createElement("button");b.className="chip";b.type="button";b.textContent=l;b.setAttribute("aria-pressed",talkCat===k);b.onclick=()=>{talkCat=k;renderTalkCats();talkNext()};el.append(b)})}
 function talkNext(){const pool=talkPool(talkCat).filter(x=>!talkCur||x.pt!==talkCur.pt);talkSet(pool[Math.floor(Math.random()*pool.length)])}
-function talkSet(item){talkCur=item;$("#talkTag").textContent=item.tag;$("#talkTarget").textContent=item.pt;$("#talkSay").textContent=item.say?"Suena: "+item.say:"";
+function talkSet(item){talkCur=item;$("#talkTag").textContent=item.tag;$("#talkTarget").textContent=item.pt;{const m=$("#talkEs");m.innerHTML="";if(item.es){const b=document.createElement("b");b.textContent="Significa";m.append(b,document.createTextNode(item.es))}}$("#talkSay").textContent=item.say?"Suena: "+item.say:"";
  const pl=$("#talkPlay");pl.replaceChildren(playBtn(item.pt));$("#talkBox").value="";$("#talkResult").hidden=true;$("#talkResult").innerHTML="";
  const best=store.get("fb_talk",{})[item.pt];$("#talkBest").textContent=best!=null?"Tu mejor: "+best+"%":""}
 /* alineación por palabras (LCS) */
