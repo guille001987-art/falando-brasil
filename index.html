@@ -1,0 +1,441 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style><title>Falando Brasil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: una columna tipo app de bolsillo, barra de pestañas arriba, ola del calçadão de Copacabana como única firma visual */
+:root{
+  --bg:#f2f4ef; --surface:#ffffff; --ink:#18221d; --muted:#5d6a62; --line:#d9dfd6;
+  --mata:#1d6a4c; --mata-soft:#e1efe7; --ipe:#e3a21a; --ipe-soft:#fbf0d6; --bad:#b4442f; --bad-soft:#f7e3de;
+  --display:"Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111814; --surface:#19231d; --ink:#e7ede8; --muted:#9aa89f; --line:#2b3830;
+  --mata:#5cc195; --mata-soft:#1b3428; --ipe:#f0b941; --ipe-soft:#3a2f14; --bad:#ee8a74; --bad-soft:#3d221b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111814; --surface:#19231d; --ink:#e7ede8; --muted:#9aa89f; --line:#2b3830;
+  --mata:#5cc195; --mata-soft:#1b3428; --ipe:#f0b941; --ipe-soft:#3a2f14; --bad:#ee8a74; --bad-soft:#3d221b; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+.wrap{max-width:640px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px));padding-block:20px 48px}
+header{display:flex;flex-direction:column;gap:6px;padding-bottom:14px}
+h1{font-family:var(--display);font-weight:800;font-size:2rem;line-height:1.05;margin:0;letter-spacing:-.01em;text-wrap:balance}
+h1 em{font-style:normal;color:var(--mata)}
+.sub{color:var(--muted);margin:0;font-size:.95rem}
+.wave{height:14px;margin:8px 0 4px;color:var(--ink);opacity:.85}
+.stats{display:flex;gap:16px;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
+.stats b{color:var(--ink);font-variant-numeric:tabular-nums}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;gap:6px;overflow-x:auto;padding:10px 0;border-bottom:1px solid var(--line);margin-bottom:18px;scrollbar-width:none}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+nav button{flex:0 0 auto;font:700 .9rem var(--body);border:1px solid var(--line);background:transparent;color:var(--muted);padding:8px 14px;border-radius:999px;cursor:pointer}
+nav button[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+button:focus-visible,select:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid var(--ipe);outline-offset:2px}
+h2{font-family:var(--display);font-weight:600;font-size:1.35rem;margin:0 0 4px}
+.lead{color:var(--muted);margin:0 0 16px;font-size:.95rem}
+.label{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.chip{font:700 .82rem var(--body);border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:6px 12px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{border-color:var(--mata);background:var(--mata-soft);color:var(--mata)}
+/* flashcard */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px 20px;display:flex;flex-direction:column;gap:12px;min-height:220px}
+.es{font-family:var(--display);font-weight:600;font-size:1.45rem;line-height:1.2;text-wrap:balance}
+.pt{font-family:var(--display);font-weight:800;font-size:1.6rem;color:var(--mata);line-height:1.2;text-wrap:balance}
+.say{color:var(--muted);font-size:.95rem}
+.note{font-size:.9rem;background:var(--ipe-soft);border-radius:8px;padding:8px 10px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{font:700 .95rem var(--body);border-radius:10px;padding:11px 16px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;flex:1 1 auto}
+.btn.primary{background:var(--mata);border-color:var(--mata);color:var(--bg)}
+.btn.bad{background:var(--bad-soft);border-color:transparent;color:var(--bad)}
+.btn.mid{background:var(--ipe-soft);border-color:transparent;color:var(--ink)}
+.btn.good{background:var(--mata-soft);border-color:transparent;color:var(--mata)}
+.btn.ghost{flex:0 0 auto;background:transparent}
+.btn:disabled{opacity:.5;cursor:default}
+.meta{display:flex;justify-content:space-between;align-items:center;font-size:.8rem;color:var(--muted);gap:8px}
+.boxes{display:flex;gap:3px}
+.boxes i{width:18px;height:6px;border-radius:3px;background:var(--line)}
+.boxes i.on{background:var(--mata)}
+/* lists */
+.list{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.item{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:12px 0;border-bottom:1px solid var(--line);align-items:start}
+.item>div{min-width:0}
+.item .w{font-weight:700}
+.item .t{color:var(--muted);font-size:.92rem}
+.item .trap{color:var(--bad);font-size:.92rem}
+.item .ok{color:var(--mata);font-size:.92rem}
+.play{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:.9rem;display:grid;place-items:center}
+.rule{display:grid;grid-template-columns:72px 1fr;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
+.rule .k{font-family:var(--display);font-weight:800;font-size:1.3rem;color:var(--mata)}
+.rule p{margin:0}
+.rule .ex{color:var(--muted);font-size:.92rem;margin-top:4px}
+/* plan */
+.week{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);align-items:flex-start}
+.week input{width:22px;height:22px;accent-color:var(--mata);margin-top:2px;flex:0 0 auto}
+.week .n{font-family:var(--display);font-weight:800;color:var(--muted);font-size:.85rem;min-width:62px}
+.week.done .body{color:var(--muted);text-decoration:line-through}
+.week .body{min-width:0}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:4px 0 14px}
+.bar i{display:block;height:100%;background:var(--mata);width:0}
+/* chat */
+.scen{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-bottom:14px}
+.scen button{text-align:left;font:700 .88rem var(--body);background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer}
+.scen button small{display:block;font-weight:400;color:var(--muted);font-size:.78rem;margin-top:2px}
+.scen button[aria-pressed="true"]{border-color:var(--mata);box-shadow:inset 0 0 0 1px var(--mata)}
+.chat{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
+.msg{max-width:88%;padding:10px 13px;border-radius:14px;white-space:pre-wrap;overflow-wrap:anywhere}
+.msg.me{align-self:flex-end;background:var(--ink);color:var(--bg);border-bottom-right-radius:4px}
+.msg.br{align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:4px}
+.msg .fix{display:block;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);font-size:.88rem;color:var(--muted)}
+.msg .fix b{color:var(--ipe)}
+.compose{display:flex;gap:8px;align-items:flex-end}
+.compose textarea{flex:1;min-width:0;font:1rem var(--body);background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:10px 12px;resize:none;min-height:46px}
+.hint{font-size:.85rem;color:var(--muted);margin:8px 0 0}
+.empty{color:var(--muted);font-size:.95rem;padding:16px;border:1px dashed var(--line);border-radius:12px;text-align:center}
+.dict{font:1.1rem var(--body);background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:10px 12px;resize:vertical;width:100%;min-height:56px}
+.res{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:12px}
+.verdict{display:flex;align-items:center;gap:12px}
+.score{font-family:var(--display);font-weight:800;font-size:2rem;font-variant-numeric:tabular-nums;line-height:1}
+.verdict .v{font-weight:700}
+.v-good{color:var(--mata)}.v-mid{color:var(--ipe)}.v-bad{color:var(--bad)}
+.words{display:flex;flex-wrap:wrap;gap:6px}
+.words span{padding:3px 9px;border-radius:6px;font-weight:700}
+.words .hit{background:var(--mata-soft);color:var(--mata)}
+.words .miss{background:var(--bad-soft);color:var(--bad);text-decoration:underline wavy}
+.words .extra{background:var(--line);color:var(--muted);font-weight:400}
+.tip{font-size:.95rem;background:var(--ipe-soft);border-radius:8px;padding:10px 12px;white-space:pre-wrap}
+.howto{margin-top:14px;font-size:.92rem;color:var(--muted)}
+.howto summary{cursor:pointer;font-weight:700;color:var(--ink);padding:6px 0}
+.howto p{margin:8px 0}
+.btn.rec{background:var(--bad);border-color:var(--bad);color:var(--bg)}
+@media (prefers-reduced-motion:no-preference){.card{transition:transform .15s}.card.flip{transform:scale(.985)}}
+</style>
+
+</head><body><div class="wrap">
+<header>
+  <span class="label">Português do Brasil · para hispanohablantes</span>
+  <h1>Falando <em>Brasil</em></h1>
+  <svg class="wave" viewBox="0 0 240 14" preserveAspectRatio="none" aria-hidden="true"><path d="M0 7 Q15 0 30 7 T60 7 T90 7 T120 7 T150 7 T180 7 T210 7 T240 7" fill="none" stroke="currentColor" stroke-width="3"/></svg>
+  <p class="sub">Negocios y vacaciones. 20–60 minutos por día.</p>
+  <div class="stats"><span>Racha <b id="stStreak">0</b> días</span><span>Para repasar hoy <b id="stDue">0</b></span><span>Dominadas <b id="stKnown">0</b></span></div>
+</header>
+
+<nav role="tablist" id="tabs">
+  <button role="tab" data-tab="cards" aria-selected="true">Tarjetas</button>
+  <button role="tab" data-tab="talk" aria-selected="false">Hablar 🎙</button>
+  <button role="tab" data-tab="chat" aria-selected="false">Conversar</button>
+  <button role="tab" data-tab="false" aria-selected="false">Falsos amigos</button>
+  <button role="tab" data-tab="sound" aria-selected="false">Pronunciación</button>
+  <button role="tab" data-tab="plan" aria-selected="false">Plan 12 semanas</button>
+</nav>
+
+<section id="p-cards">
+  <h2>Repaso del día</h2>
+  <p class="lead">Leé en español, decilo en voz alta en portugués y después mirá la respuesta. Las que fallás vuelven antes.</p>
+  <div class="chips" id="cats"></div>
+  <div class="card" id="card"></div>
+</section>
+
+<section id="p-talk" hidden>
+  <h2>Decilo en voz alta</h2>
+  <p class="lead">Escuchá la frase, decila y fijate si se entiende. Si el dictado en portugués escribe lo mismo que la frase, un brasileño también te entiende.</p>
+  <div class="chips" id="talkCats"></div>
+  <div class="card">
+    <div class="meta"><span class="label" id="talkTag">Frase</span><span id="talkBest"></span></div>
+    <div class="row" style="align-items:center"><div class="pt" id="talkTarget" style="flex:1"></div><span id="talkPlay"></span></div>
+    <div class="say" id="talkSay"></div>
+    <div class="row" id="micRow" hidden><button class="btn primary" id="micBtn" type="button">🎙 Grabar</button></div>
+    <label class="label" for="talkBox" id="talkLbl">Tu navegador no permite grabar acá: usá el 🎙 del teclado del celular</label>
+    <textarea id="talkBox" rows="2" class="dict" placeholder="Acá aparece lo que dijiste…"></textarea>
+    <div class="row">
+      <button class="btn primary" id="talkCheck" type="button">Corregir</button>
+      <button class="btn ghost" id="talkNext" type="button">Otra frase →</button>
+    </div>
+    <div id="talkResult" hidden></div>
+  </div>
+  <details class="howto">
+    <summary>Cómo activar el dictado en portugués (1 vez)</summary>
+    <p><b>iPhone:</b> Configuración → General → Teclado → Teclados → Agregar → Portugués (Brasil). Después, en el teclado tocás el 🌐 para elegir portugués y tocás el micrófono.</p>
+    <p><b>Android (Gboard):</b> Configuración de Gboard → Idiomas → Agregar → Português (Brasil). En el teclado mantené apretada la barra espaciadora para cambiar a portugués y tocá el micrófono.</p>
+    <p>Importante: el dictado tiene que estar en <b>portugués</b>. Si está en español, te va a escribir «no» en lugar de «não» y no sirve para corregir.</p>
+  </details>
+</section>
+
+<section id="p-chat" hidden>
+  <h2>Conversar con corrección</h2>
+  <p class="lead">La conversación con un brasileño que te corrige usa Claude, así que vive en la versión de Claude de esta app.</p>
+  <div class="card"><div class="es">Abrila en Claude para practicar diálogos de negocios, hotel, restaurante y más.</div>
+  <div class="row"><a class="btn primary" href="https://claude.ai/artifact/LX8eML5GEWiBtmAaG4388H#chat" target="_blank" rel="noopener" style="text-align:center;text-decoration:none">Abrir Conversar en Claude</a></div>
+  <p class="say">Tu progreso de tarjetas y pronunciación queda guardado acá, en este navegador.</p></div>
+  <div hidden><div id="scen"></div><div id="chat"></div><textarea id="box"></textarea><button id="send"></button><p id="chatHint"></p></div>
+</section>
+
+<section id="p-false" hidden>
+  <h2>Falsos amigos</h2>
+  <p class="lead">Palabras que parecen españolas y significan otra cosa. Con un proveedor o en un restaurante, estas te pueden dejar en offside.</p>
+  <div class="list" id="falseList"></div>
+</section>
+
+<section id="p-sound" hidden>
+  <h2>Los 8 sonidos que te delatan</h2>
+  <p class="lead">El vocabulario lo sacás por parecido. Lo que hace que te entiendan es esto.</p>
+  <div id="rules"></div>
+</section>
+
+<section id="p-plan" hidden>
+  <h2>Plan de 12 semanas</h2>
+  <p class="lead">Una hora por día: 20 min tarjetas, 20 min audio (Pimsleur o podcast), 20 min hablar.</p>
+  <div class="meta"><span id="planTxt">0 de 12 semanas</span></div>
+  <div class="bar"><i id="planBar"></i></div>
+  <div id="plan"></div>
+</section>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+/* ---------- datos ---------- */
+const CARDS=[
+ // básico
+ ["basico","Hola, ¿cómo estás?","Oi, tudo bem?","oi, tudu bein","Respuesta típica: «Tudo bem, e você?»"],
+ ["basico","Gracias (dicho por un hombre)","Obrigado","obrigadu","La mujer dice «obrigada»."],
+ ["basico","De nada","De nada / Imagina","dji nada / imajína","«Imagina» es muy común y suena amable."],
+ ["basico","Disculpá, no entendí","Desculpa, não entendi","dejskúlpa, nãum entendjí",""],
+ ["basico","¿Podés hablar más despacio?","Você pode falar mais devagar?","vosê pódji falár mais djivagár",""],
+ ["basico","¿Cuánto cuesta?","Quanto custa?","kuãntu kústa",""],
+ ["basico","Está bien / Dale","Tá bom / Beleza","tá bõ / belêza","«Beleza» es el «dale» brasileño."],
+ ["basico","Yo soy argentino, de Santa Fe","Eu sou argentino, de Santa Fé","eu sou arjentchínu, dji santa fé",""],
+ ["basico","No hay problema","Sem problema","sein problêma",""],
+ ["basico","Ahora mismo / Ya","Agora mesmo / Já","agóra mêsmu / já","«Já» suena «ya» con la j francesa, no con nuestra j."],
+ // negocios
+ ["negocios","Mucho gusto, soy el dueño de la empresa","Prazer, eu sou o dono da empresa","prazêr, eu sou u dônu da empréza",""],
+ ["negocios","Quisiera ver la lista de precios","Eu queria ver a tabela de preços","eu kería vêr a tabéla dji présus","«Tabela» = lista de precios."],
+ ["negocios","¿Cuál es el pedido mínimo?","Qual é o pedido mínimo?","kuáu é u pedjídu mínimu",""],
+ ["negocios","¿Me hacés un descuento por cantidad?","Você me faz um desconto por quantidade?","vosê mi fáis un djiskôntu por kuantchidádji",""],
+ ["negocios","¿Cuál es el plazo de entrega?","Qual é o prazo de entrega?","kuáu é u prázu dji entréga",""],
+ ["negocios","¿Aceptan transferencia o Pix?","Vocês aceitam transferência ou Pix?","vosês aseitãum transferênsia ou piks","Pix es el sistema de pago instantáneo brasileño, lo usan todos."],
+ ["negocios","Mandame la propuesta por WhatsApp","Me manda a proposta pelo WhatsApp","mi mãnda a propósta pêlu uatsáp","Los brasileños dicen «zap» o «zap zap»."],
+ ["negocios","Necesito la factura","Eu preciso da nota fiscal","eu presízu da nóta fiskáu","Factura = «nota fiscal»."],
+ ["negocios","El precio está un poco alto","O preço está um pouco alto","u prêsu está un pôuku áutu",""],
+ ["negocios","Cerramos trato","Fechado! / Negócio fechado","feshádu / negósiu feshádu","«Fechado» también sirve para «dale, quedamos así»."],
+ ["negocios","¿Tienen stock disponible?","Vocês têm estoque disponível?","vosês têin istóki disponívêu",""],
+ ["negocios","¿Cuánto sale el envío a Argentina?","Quanto sai o frete para a Argentina?","kuãntu sái u fréchi pra arjentchína","Envío = «frete»."],
+ ["negocios","Te confirmo mañana","Te confirmo amanhã","tchi konfírmu amañã",""],
+ ["negocios","Garantía","Garantia","garantchía",""],
+ // viaje
+ ["viaje","Tengo una reserva a nombre de Guillermo","Tenho uma reserva em nome de Guillermo","teñu uma rezérva ein nômi dji guillérmu",""],
+ ["viaje","¿A qué hora es el desayuno?","Que horas é o café da manhã?","ki óras é u kafé da mañã","Desayuno = «café da manhã»."],
+ ["viaje","La cuenta, por favor","A conta, por favor","a kônta, por favôr",""],
+ ["viaje","¿Me recomendás algo típico?","Você me recomenda algo típico?","vosê mi rrekomênda áugu tchípiku",""],
+ ["viaje","¿Dónde queda la playa?","Onde fica a praia?","ôndji fíka a práia","«Ficar» = quedar (ubicación)."],
+ ["viaje","Un agua sin gas, por favor","Uma água sem gás, por favor","uma água sein gás",""],
+ ["viaje","¿Aceptan tarjeta?","Aceita cartão?","aséita kartãum",""],
+ ["viaje","Quiero ir al aeropuerto","Eu quero ir para o aeroporto","eu kéru ir pru aeropôrtu",""],
+ ["viaje","Está muy rico","Está uma delícia","está uma delísia",""],
+ ["viaje","¿Hay que dejar propina?","Precisa deixar gorjeta?","presíza deishár gorjêta","En restaurantes suele venir el 10% en la cuenta («serviço»)."],
+ ["viaje","Me perdí","Eu me perdi","eu mi perdjí",""],
+ ["viaje","¿Está incluido?","Está incluído?","está inkluídu",""]
+];
+const FALSE=[
+ ["exquisito","esquisito","raro, extraño","delicioso → «gostoso», «delicioso»"],
+ ["polvo","polvo","pulpo","polvo → «pó»"],
+ ["borracha","borracha","goma (de borrar)","borracha → «bêbada»"],
+ ["oficina","oficina","taller mecánico","oficina → «escritório»"],
+ ["apellido","apelido","apodo","apellido → «sobrenome»"],
+ ["largo","largo","ancho","largo → «comprido»"],
+ ["latido","latido","ladrido","latido → «batida»"],
+ ["rato","rato","rata","rato (tiempo) → «momento»"],
+ ["pronto","pronto","listo","pronto → «logo», «em breve»"],
+ ["embarazada","embaraçada","avergonzada","embarazada → «grávida»"],
+ ["salsa","salsa","perejil","salsa → «molho»"],
+ ["cena","cena","escena","cena → «jantar»"],
+ ["acordar","acordar","despertar(se)","acordar → «combinar»"],
+ ["firma","firma","empresa","firma → «assinatura»"],
+ ["presunto","presunto","jamón","presunto → «suposto»"],
+ ["cachorro","cachorro","perro (cualquiera)","cachorro → «filhote»"],
+ ["propina","propina","coima","propina → «gorjeta» ⚠️ clave en negocios"],
+ ["ninguno","ninguém","nadie","ninguno → «nenhum»"],
+ ["contestar","contestar","cuestionar, objetar","contestar → «responder»"],
+ ["vaso","vaso","florero, maceta","vaso → «copo»"],
+ ["sitio","sítio","quinta, chacra","sitio web → «site»"],
+ ["tirar","tirar","sacar, quitar","tirar (arrojar) → «jogar»"]
+];
+const RULES=[
+ ["ti / di","La T y la D antes de «i» (o de «e» final) suenan «ch» y «y» suave (dj).","tia → chía · dia → djía · cidade → sidádji"],
+ ["R-","La R inicial y la RR suenan como nuestra J, aspirada y suave.","Rio → Jíu · carro → káju · rua → júa"],
+ ["-ão","Nasal: decí «aun» por la nariz, sin cerrar la n.","não → nãum · pão → pãum · São Paulo"],
+ ["-em","Al final de palabra la -em suena «ein» nasal.","bem → bein · também → tambein · tem → tein"],
+ ["-o","La O átona final suena U.","obrigado → obrigádu · preço → présu"],
+ ["-e","La E átona final suena I (y con T/D, «chi» y «dji»).","leite → léitchi · cidade → sidádji · de → dji"],
+ ["lh / nh","Como nuestra «ll» bien pronunciada y la «ñ».","trabalho → trabáliu · amanhã → amañã"],
+ ["-l","La L al final de sílaba suena U.","Brasil → Brasíu · qual → kuáu · Natal → Natáu"]
+];
+const PLAN=[
+ ["Sem. 1","Pronunciación: los 8 sonidos todos los días + Pimsleur lecciones 1–5."],
+ ["Sem. 2","Falsos amigos completos + 10 tarjetas nuevas por día. Pimsleur 6–10."],
+ ["Sem. 3","Primera clase con tutor brasileño (italki, 2 por semana). Presentarte y hablar de tus negocios."],
+ ["Sem. 4","Verbos clave en presente: ser, estar, ter, ir, fazer, querer, poder. Escenario «Hotel» en Conversar."],
+ ["Sem. 5","Pasado (pretérito perfeito). Contar qué hiciste ayer. Escenario «Restaurante»."],
+ ["Sem. 6","Números, precios y regateo. Escenario «Negociar con proveedor» 3 veces."],
+ ["Sem. 7","Audio pasivo: podcasts y una serie brasileña con subtítulos en portugués."],
+ ["Sem. 8","Llamadas y WhatsApp: mandar audios en portugués a un tandem (Tandem/HelloTalk)."],
+ ["Sem. 9","Futuro y condicional (vou fazer, faria). Planear un viaje en voz alta."],
+ ["Sem. 10","Simular una reunión completa de 20 min con tutor: presentación, precio, plazos, cierre."],
+ ["Sem. 11","Expresiones coloquiais: beleza, valeu, show, cara, nossa, legal."],
+ ["Sem. 12","Prueba final: 30 min de charla sin pasar al español. Repetir las tarjetas que quedaron en caja 1."]
+];
+const SCEN=[
+ {id:"prov",t:"Negociar con proveedor",d:"Compra mayorista en São Paulo",role:"Você é Marcos, vendedor de uma distribuidora de eletrônicos em São Paulo. O cliente é um comerciante argentino que quer comprar no atacado. Fale de preços, pedido mínimo, prazo e frete, e negocie um pouco."},
+ {id:"cli",t:"Atender a un cliente",d:"Un brasileño te consulta por un iPhone",role:"Você é Juliana, uma cliente brasileira interessada em comprar um iPhone. O usuário é o vendedor. Pergunte sobre modelo, preço, garantia, forma de pagamento e entrega."},
+ {id:"hotel",t:"Hotel",d:"Check-in en Florianópolis",role:"Você é o recepcionista de uma pousada em Florianópolis. O usuário é um hóspede argentino fazendo check-in. Pergunte o nome, explique o café da manhã, o Wi-Fi e como chegar à praia."},
+ {id:"rest",t:"Restaurante",d:"Pedir comida y la cuenta",role:"Você é garçom num restaurante no Rio de Janeiro. O usuário é um cliente argentino. Ofereça o cardápio, recomende pratos típicos e depois traga a conta."},
+ {id:"taxi",t:"Uber / taxi",d:"Charla con el conductor",role:"Você é um motorista de Uber simpático em Salvador. O usuário é um turista argentino. Puxe conversa: de onde ele é, quanto tempo fica, dicas da cidade."},
+ {id:"libre",t:"Charla libre",d:"Hablá de lo que quieras",role:"Você é um amigo brasileiro de São Paulo, descontraído. Converse sobre qualquer assunto que o usuário trouxer."}
+];
+
+/* ---------- utilidades ---------- */
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()};
+const dayNum=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5);
+let voice=null;
+function pickVoice(){try{const v=speechSynthesis.getVoices();voice=v.find(x=>x.lang==="pt-BR")||v.find(x=>/^pt/i.test(x.lang))||null}catch(e){}}
+const canSpeak=(()=>{try{return "speechSynthesis" in window}catch(e){return false}})();
+if(canSpeak){pickVoice();try{speechSynthesis.onvoiceschanged=pickVoice}catch(e){}}
+function speak(t){if(!canSpeak)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="pt-BR";if(voice)u.voice=voice;u.rate=.9;speechSynthesis.speak(u)}catch(e){}}
+function playBtn(text){const b=document.createElement("button");b.className="play";b.type="button";b.textContent="▶";b.setAttribute("aria-label","Escuchar: "+text);b.onclick=()=>speak(text);if(!canSpeak)b.hidden=true;return b}
+
+/* ---------- racha ---------- */
+function markPractice(){const s=store.get("fb_streak",{last:null,n:0});const t=dayNum();if(s.last===t)return;s.n=(s.last===t-1)?s.n+1:1;s.last=t;store.set("fb_streak",s);stats()}
+function stats(){const s=store.get("fb_streak",{last:null,n:0});const alive=s.last!==null&&dayNum()-s.last<=1;$("#stStreak").textContent=alive?s.n:0;
+ const p=store.get("fb_srs",{});let due=0,known=0;CARDS.forEach((c,i)=>{const r=p[i];if(!r||r.due<=dayNum())due++;if(r&&r.box>=4)known++});
+ $("#stDue").textContent=due;$("#stKnown").textContent=known+"/"+CARDS.length}
+
+/* ---------- tarjetas (Leitner) ---------- */
+const INT=[0,1,3,7,16];let cat=store.get("fb_cat","todas");let cur=null,shown=false,last=null;
+function renderCats(){const el=$("#cats");el.innerHTML="";[["todas","Todas"],["negocios","Negocios"],["viaje","Viaje"],["basico","Básico"]].forEach(([k,l])=>{const b=document.createElement("button");b.className="chip";b.type="button";b.textContent=l;b.setAttribute("aria-pressed",cat===k);b.onclick=()=>{cat=k;store.set("fb_cat",k);renderCats();next()};el.append(b)})}
+function next(){const p=store.get("fb_srs",{});const t=dayNum();
+ const pool=CARDS.map((c,i)=>i).filter(i=>cat==="todas"||CARDS[i][0]===cat);
+ const due=pool.filter(i=>!p[i]||p[i].due<=t).sort((a,b)=>((p[a]?.box??-1)-(p[b]?.box??-1))||Math.random()-.5);
+ const q=due.length>1?due.filter(i=>i!==last):due;cur=q.length?q[0]:null;shown=false;drawCard()}
+function drawCard(){const el=$("#card");el.innerHTML="";
+ if(cur===null){el.innerHTML='<div class="es">¡Listo por hoy en esta categoría! 🎉</div><p class="say">Volvé mañana o probá otra categoría. Mientras tanto, practicá en «Conversar».</p>';return}
+ const [k,es,pt,say,note]=CARDS[cur];const box=(store.get("fb_srs",{})[cur]?.box)??0;
+ const meta=document.createElement("div");meta.className="meta";meta.innerHTML='<span class="label">'+({negocios:"Negocios",viaje:"Viaje",basico:"Básico"}[k])+'</span><span class="boxes" aria-label="Nivel '+box+' de 4">'+[1,2,3,4].map(n=>'<i class="'+(box>=n?"on":"")+'"></i>').join("")+'</span>';
+ const e=document.createElement("div");e.className="es";e.textContent=es;el.append(meta,e);
+ if(!shown){const r=document.createElement("div");r.className="row";const b=document.createElement("button");b.className="btn primary";b.textContent="Ver en portugués";b.onclick=()=>{shown=true;drawCard();speak(pt)};r.append(b);el.append(r);return}
+ const line=document.createElement("div");line.className="row";line.style.alignItems="center";const p=document.createElement("div");p.className="pt";p.style.flex="1";p.textContent=pt;line.append(p,playBtn(pt));
+ const s=document.createElement("div");s.className="say";s.textContent="Suena: "+say;el.append(line,s);
+ if(note){const n=document.createElement("div");n.className="note";n.textContent=note;el.append(n)}
+ const tr=document.createElement("div");tr.className="row";const tb=document.createElement("button");tb.className="btn ghost";tb.type="button";tb.textContent="🎙 Practicar cómo la digo";tb.onclick=()=>{talkSet({pt:firstVar(pt),say,tag:"Tarjeta"});goTab("talk")};tr.append(tb);el.append(tr);
+ const r=document.createElement("div");r.className="row";[["bad","No la sabía",0],["mid","Más o menos",1],["good","La sabía",2]].forEach(([c,l,g])=>{const b=document.createElement("button");b.className="btn "+c;b.textContent=l;b.onclick=()=>grade(g);r.append(b)});el.append(r);
+ el.classList.add("flip");setTimeout(()=>el.classList.remove("flip"),150)}
+function grade(g){const p=store.get("fb_srs",{});const r=p[cur]||{box:0};r.box=g===0?0:g===1?Math.max(1,r.box):Math.min(4,r.box+1);r.due=dayNum()+(g===0?0:INT[r.box]);p[cur]=r;store.set("fb_srs",p);markPractice();stats();last=cur;next()}
+
+/* ---------- falsos amigos ---------- */
+function renderFalse(){const el=$("#falseList");FALSE.forEach(([es,pt,mean,fix])=>{const it=document.createElement("div");it.className="item";const d=document.createElement("div");
+ d.innerHTML='<div class="w"></div><div class="trap"></div><div class="ok"></div>';d.children[0].textContent=pt;d.children[1].textContent="En portugués significa: "+mean;d.children[2].textContent="Si querés decir "+fix;it.append(d,playBtn(pt));el.append(it)})}
+
+/* ---------- pronunciación ---------- */
+function renderRules(){const el=$("#rules");RULES.forEach(([k,txt,ex])=>{const r=document.createElement("div");r.className="rule";const kk=document.createElement("div");kk.className="k";kk.textContent=k;const b=document.createElement("div");b.style.minWidth="0";const p=document.createElement("p");p.textContent=txt;const e=document.createElement("p");e.className="ex";e.textContent=ex;b.append(p,e);
+ const words=ex.split("·").map(s=>s.split("→")[0].trim()).join(", ");const row=document.createElement("div");row.className="row";row.style.marginTop="8px";const pb=playBtn(words);row.append(pb);b.append(row);r.append(kk,b);el.append(r)})}
+
+/* ---------- plan ---------- */
+function renderPlan(){const done=store.get("fb_plan",[]);const el=$("#plan");el.innerHTML="";PLAN.forEach(([n,t],i)=>{const w=document.createElement("label");w.className="week"+(done.includes(i)?" done":"");const c=document.createElement("input");c.type="checkbox";c.id="wk"+i;c.checked=done.includes(i);c.onchange=()=>{let d=store.get("fb_plan",[]);d=c.checked?[...new Set([...d,i])]:d.filter(x=>x!==i);store.set("fb_plan",d);renderPlan()};
+ const nn=document.createElement("span");nn.className="n";nn.textContent=n;const b=document.createElement("span");b.className="body";b.textContent=t;w.append(c,nn,b);el.append(w)});
+ $("#planTxt").textContent=done.length+" de 12 semanas";$("#planBar").style.width=(done.length/12*100)+"%"}
+
+/* ---------- conversar ---------- */
+let scen=SCEN[0],turns=[],busy=false,sampleFn=null;
+const RULESTXT=s=>`Você é um parceiro de conversação para um argentino (falante de espanhol rioplatense) que está aprendendo português do Brasil para negócios e viagens. Nível: iniciante-intermediário.
+CENÁRIO: ${s.role}
+REGRAS:
+1. Fique no papel. Responda SOMENTE em português brasileiro natural e coloquial, frases curtas (1 a 3), vocabulário simples. Termine com uma pergunta para manter a conversa.
+2. Depois da sua fala, escreva uma linha que começa exatamente com "CORREÇÃO:" e, em espanhol rioplatense informal (voseo), corrija os erros da última mensagem do usuário: mostre como diria um brasileiro. Se estiver perfeito, diga "¡Perfecto!" e dê uma dica curta. Se o usuário escreveu em espanhol, mostre como dizer aquilo em português.
+3. Não use markdown, nem asteriscos.`;
+function renderScen(){const el=$("#scen");el.innerHTML="";SCEN.forEach(s=>{const b=document.createElement("button");b.type="button";b.setAttribute("aria-pressed",s.id===scen.id);b.innerHTML="<span></span><small></small>";b.children[0].textContent=s.t;b.children[1].textContent=s.d;b.onclick=()=>{if(busy)return;scen=s;turns=[];renderScen();drawChat()};el.append(b)})}
+function bubble(role,text){const m=document.createElement("div");m.className="msg "+(role==="user"?"me":"br");
+ if(role==="user"){m.textContent=text;return m}
+ const i=text.indexOf("CORREÇÃO:");const main=(i>=0?text.slice(0,i):text).trim();const fix=i>=0?text.slice(i+9).trim():"";
+ const t=document.createElement("span");t.textContent=main;m.append(t);
+ if(main&&canSpeak){const p=playBtn(main);p.style.cssText="width:30px;height:30px;font-size:.75rem;margin-top:6px";m.append(document.createElement("br"),p)}
+ if(fix){const f=document.createElement("span");f.className="fix";f.innerHTML="<b>Corrección:</b> ";f.append(document.createTextNode(fix));m.append(f)}return m}
+function drawChat(){const el=$("#chat");el.innerHTML="";
+ if(!turns.length){const e=document.createElement("div");e.className="empty";e.textContent=sampleFn?"Arrancá saludando. Ej: «Oi, tudo bem? Eu sou Guillermo, da Argentina.»":"La práctica de conversación funciona al abrir esta página en Claude. El resto de la app anda igual.";el.append(e)}
+ turns.forEach(t=>el.append(bubble(t.role,t.content)))}
+async function send(){const box=$("#box");const v=box.value.trim();if(!v||busy||!sampleFn)return;busy=true;$("#send").disabled=true;
+ turns.push({role:"user",content:v});box.value="";drawChat();
+ const live=bubble("assistant","Pensando…");$("#chat").append(live);live.scrollIntoView({block:"end",behavior:"smooth"});
+ try{const hist=turns.slice(-16);const {text}=await sampleFn([{role:"user",content:RULESTXT(scen)},...hist],{cache:false,modelTier:"quick",onText:({text})=>{const n=bubble("assistant",text);live.replaceChildren(...n.childNodes)}});
+  turns.push({role:"assistant",content:text});markPractice();drawChat()}
+ catch(e){turns.pop();box.value=v;drawChat();const msg={not_granted:"Necesitás permitir que la página use Claude para conversar.",rate_limited:"Llegaste al límite de mensajes por ahora. Probá en un rato.",session_expired:"Volvé a iniciar sesión en Claude."}[e.code]||(e.code==="cancelled"?"":"Se cortó la conexión. Probá enviar de nuevo.");$("#chatHint").textContent=msg||$("#chatHint").textContent;if(["not_granted","sampling_disabled","not_declared","capability_disabled"].includes(e.code)){sampleFn=null;$("#send").disabled=true}}
+ finally{busy=false;if(sampleFn)$("#send").disabled=false;$("#chat").lastElementChild?.scrollIntoView({block:"end",behavior:"smooth"})}}
+$("#send").onclick=send;
+$("#box").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send()}});
+
+/* ---------- hablar (pronunciación) ---------- */
+const firstVar=s=>s.split(" / ")[0].replace(/!$/,"!").trim();
+const norm=s=>s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9\s]/g," ").split(/\s+/).filter(Boolean);
+function talkPool(c){
+ if(c==="sonidos")return RULES.flatMap(([k,,ex])=>ex.split("·").map(x=>{const [w,s]=x.split("→").map(t=>t.trim());return {pt:w,say:s||"",tag:"Sonido "+k}}));
+ return CARDS.filter(x=>c==="todas"||x[0]===c).map(x=>({pt:firstVar(x[2]).replace(/\.\.\.$/,"").trim(),say:x[3],tag:{negocios:"Negocios",viaje:"Viaje",basico:"Básico"}[x[0]]}));
+}
+let talkCat="todas",talkCur=null;
+function renderTalkCats(){const el=$("#talkCats");el.innerHTML="";[["todas","Todas"],["negocios","Negocios"],["viaje","Viaje"],["basico","Básico"],["sonidos","Sonidos difíciles"]].forEach(([k,l])=>{const b=document.createElement("button");b.className="chip";b.type="button";b.textContent=l;b.setAttribute("aria-pressed",talkCat===k);b.onclick=()=>{talkCat=k;renderTalkCats();talkNext()};el.append(b)})}
+function talkNext(){const pool=talkPool(talkCat).filter(x=>!talkCur||x.pt!==talkCur.pt);talkSet(pool[Math.floor(Math.random()*pool.length)])}
+function talkSet(item){talkCur=item;$("#talkTag").textContent=item.tag;$("#talkTarget").textContent=item.pt;$("#talkSay").textContent=item.say?"Suena: "+item.say:"";
+ const pl=$("#talkPlay");pl.replaceChildren(playBtn(item.pt));$("#talkBox").value="";$("#talkResult").hidden=true;$("#talkResult").innerHTML="";
+ const best=store.get("fb_talk",{})[item.pt];$("#talkBest").textContent=best!=null?"Tu mejor: "+best+"%":""}
+/* alineación por palabras (LCS) */
+function align(target,said){const a=norm(target),b=norm(said);const n=a.length,m=b.length;const d=Array.from({length:n+1},()=>Array(m+1).fill(0));
+ for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)d[i][j]=a[i]===b[j]?d[i+1][j+1]+1:Math.max(d[i+1][j],d[i][j+1]);
+ const out=[];let i=0,j=0;const shown=target.replace(/[!?.,¿¡]/g,"").split(/\s+/).filter(Boolean);
+ while(i<n&&j<m){if(a[i]===b[j]){out.push({w:shown[i]||a[i],k:"hit"});i++;j++}else if(d[i+1][j]>=d[i][j+1]){out.push({w:shown[i]||a[i],k:"miss"});i++}else{out.push({w:b[j],k:"extra"});j++}}
+ while(i<n){out.push({w:shown[i]||a[i],k:"miss"});i++}while(j<m){out.push({w:b[j],k:"extra"});j++}
+ const hits=out.filter(x=>x.k==="hit").length,extra=out.filter(x=>x.k==="extra").length;const score=n?Math.round(100*hits/(n+extra*0.5)):0;return {out,score:Math.min(100,score)}}
+let talkCtl=null;
+async function talkCheck(){const said=$("#talkBox").value.trim();const res=$("#talkResult");res.hidden=false;
+ if(!said){res.innerHTML='<div class="res"><div class="tip">Primero decí la frase con el dictado del teclado (o el botón Grabar) y después tocá Corregir.</div></div>';return}
+ const {out,score}=align(talkCur.pt,said);
+ const [cls,txt]=score>=90?["v-good","¡Bien! Se te entiende perfecto."]:score>=60?["v-mid","Casi. Repasá las palabras en rojo."]:["v-bad","Todavía no se entiende. Escuchala de nuevo y probá más despacio."];
+ res.innerHTML='<div class="res"><div class="verdict"><span class="score '+cls+'"></span><span class="v '+cls+'"></span></div><div><span class="label">Lo que se entendió</span><div class="words" id="talkWords" style="margin-top:6px"></div></div><div class="tip" id="talkTip" hidden></div></div>';
+ res.querySelector(".score").textContent=score+"%";res.querySelector(".v").textContent=txt;
+ const ws=$("#talkWords");out.forEach(x=>{const s=document.createElement("span");s.className=x.k;s.textContent=x.w;s.title={hit:"Bien dicha",miss:"No se entendió",extra:"Se entendió otra cosa"}[x.k];ws.append(s)});
+ const all=store.get("fb_talk",{});all[talkCur.pt]=Math.max(all[talkCur.pt]||0,score);store.set("fb_talk",all);$("#talkBest").textContent="Tu mejor: "+all[talkCur.pt]+"%";markPractice();
+ if(score>=100)return;
+ const tip=$("#talkTip");const t=localTips(out.filter(x=>x.k==="miss").map(x=>x.w),said);if(t){tip.hidden=false;tip.textContent=t}}
+function localTips(miss,said){const tips=new Set();const ns=norm(said);
+ if(ns.some(w=>["no","si","yo","es","que","con","para","de nada"].includes(w))&&miss.length)tips.add("Ojo: si el dictado te escribe palabras en español («no», «yo»), puede que el idioma esté en español. Cambialo a portugués.");
+ miss.forEach(w0=>{const w=w0.toLowerCase();
+  if(/^rr?|rr/.test(w))tips.add("«"+w0+"»: la R inicial o doble suena como nuestra J suave (Rio = Jíu).");
+  if(/(t|d)i|(t|d)e$/.test(w))tips.add("«"+w0+"»: T y D antes de «i» o en «-te/-de» final suenan «ch» y «dj» (dia = djía, leite = léitchi).");
+  if(/ão|ões|ãe|ã/.test(w))tips.add("«"+w0+"»: es nasal. Decí «aum» por la nariz sin cerrar la boca (não = nãum).");
+  if(/(em|ém|ém)$/.test(w))tips.add("«"+w0+"»: la -em final suena «ein» nasal (bem = bein).");
+  if(/(lh|nh)/.test(w))tips.add("«"+w0+"»: lh suena «li» y nh suena «ñ» (trabalho = trabáliu, amanhã = amañã).");
+  if(/l$|l[^aeiouáéíóúâêôãõh]/.test(w))tips.add("«"+w0+"»: la L final de sílaba suena U (Brasil = Brasíu).");
+  if(/o$/.test(w)&&w.length>2)tips.add("«"+w0+"»: la O final suena U (obrigado = obrigádu).");
+  if(/[çs]/.test(w)&&/ç/.test(w))tips.add("«"+w0+"»: la ç suena S.");
+ });
+ if(!tips.size&&miss.length)tips.add("Fallaron: "+miss.join(", ")+". Escuchá la frase con ▶, repetila más despacio y separando bien las palabras.");
+ return [...tips].slice(0,3).join("\n")}
+$("#talkCheck").onclick=talkCheck;$("#talkNext").onclick=talkNext;
+/* micrófono directo, solo si el navegador lo permite */
+(function(){let SR=null;try{SR=window.SpeechRecognition||window.webkitSpeechRecognition}catch(e){}if(!SR)return;
+ let rec=null,on=false;const btn=$("#micBtn");$("#micRow").hidden=false;$("#talkLbl").textContent="Tocá Grabar, decí la frase y esperá: se corrige solo";
+ btn.onclick=()=>{if(on){try{rec.stop()}catch(e){}return}
+  try{rec=new SR();rec.lang="pt-BR";rec.interimResults=true;rec.maxAlternatives=1}catch(e){$("#micRow").hidden=true;return}
+  rec.onresult=ev=>{let t="";for(const r of ev.results)t+=r[0].transcript;$("#talkBox").value=t};
+  rec.onend=()=>{on=false;btn.classList.remove("rec");btn.textContent="🎙 Grabar";if($("#talkBox").value.trim())talkCheck()};
+  rec.onerror=ev=>{if(ev.error==="not-allowed"||ev.error==="service-not-allowed"||ev.error==="audio-capture"){$("#micRow").hidden=true;$("#talkLbl").textContent="Acá el micrófono directo está bloqueado: usá el 🎙 del teclado del celular"}};
+  try{rec.start();on=true;btn.classList.add("rec");btn.textContent="■ Parar";$("#talkBox").value=""}catch(e){$("#micRow").hidden=true}}})();
+
+/* ---------- pestañas ---------- */
+const TABS=["cards","talk","chat","false","sound","plan"];
+function goTab(t){show(t);try{history.replaceState(null,"","#"+t)}catch(e){}scrollTo({top:0})}
+function show(t){if(!TABS.includes(t))t="cards";document.querySelectorAll("#tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t));TABS.forEach(x=>$("#p-"+x).hidden=x!==t)}
+document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{show(b.dataset.tab);try{history.replaceState(null,"","#"+b.dataset.tab)}catch(e){location.hash=b.dataset.tab}});
+addEventListener("hashchange",()=>show(location.hash.slice(1)));
+
+/* ---------- arranque ---------- */
+renderCats();next();renderTalkCats();talkNext();renderFalse();renderRules();renderPlan();renderScen();stats();show(location.hash.slice(1));
+$("#send").disabled=true;drawChat();
+(async()=>{try{const s=await window.claude?.use?.("sample");if(s){sampleFn=null;$("#send").disabled=false;drawChat()}}catch(e){}})();
+</script>
+</body></html>
